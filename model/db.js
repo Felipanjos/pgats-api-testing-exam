@@ -43,4 +43,4 @@ const db = {
   nextTeamId: 4,
 };
 
-module.exports = db;
+export default db;

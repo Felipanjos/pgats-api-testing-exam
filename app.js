@@ -1,9 +1,9 @@
-const express = require('express');
-const swaggerJsdoc = require('swagger-jsdoc');
-const swaggerUi = require('swagger-ui-express');
+import express from 'express';
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 
-const trainerController = require('./controller/trainerController');
-const teamController = require('./controller/teamController');
+import trainerController from './controller/trainerController.js';
+import teamController from './controller/teamController.js';
 
 const app = express();
 
@@ -88,4 +88,4 @@ app.use((error, req, res, next) => {
   });
 });
 
-module.exports = app;
+export default app;

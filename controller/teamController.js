@@ -1,5 +1,5 @@
-const express = require('express');
-const { createTeam, addPokemonToTeam, getTrainerTeams, getAllTeams } = require('../service/teamService');
+import express from 'express';
+import { createTeam, addPokemonToTeam, getTrainerTeams, getAllTeams } from '../service/teamService.js';
 
 const router = express.Router();
 
@@ -249,4 +249,4 @@ router.post('/teams/pokemon', (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

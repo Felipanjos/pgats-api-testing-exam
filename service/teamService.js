@@ -1,5 +1,5 @@
-const db = require('../model/db');
-const { findTrainerByUsername } = require('./trainerService');
+import db from '../model/db.js';
+import { findTrainerByUsername } from './trainerService.js';
 
 /**
  * Cria um novo time para um treinador
@@ -8,7 +8,7 @@ const { findTrainerByUsername } = require('./trainerService');
  * @returns {object} - Dados do time criado
  * @throws {Error} - Se treinador não encontrado ou time já existir
  */
-function createTeam(username, teamName) {
+export function createTeam(username, teamName) {
   const trainer = findTrainerByUsername(username);
 
   if (!trainer) {
@@ -40,7 +40,7 @@ function createTeam(username, teamName) {
  * @returns {object} - Dados do time atualizado
  * @throws {Error} - Se treinador, time não encontrado ou time já tiver 6 Pokémon
  */
-function addPokemonToTeam(username, teamName, pokemonName) {
+export function addPokemonToTeam(username, teamName, pokemonName) {
   const trainer = findTrainerByUsername(username);
 
   if (!trainer) {
@@ -67,7 +67,7 @@ function addPokemonToTeam(username, teamName, pokemonName) {
  * @returns {array} - Lista de times do treinador
  * @throws {Error} - Se treinador não encontrado
  */
-function getTrainerTeams(username) {
+export function getTrainerTeams(username) {
   const trainer = findTrainerByUsername(username);
 
   if (!trainer) {
@@ -81,7 +81,7 @@ function getTrainerTeams(username) {
  * Retorna todos os times de todos os treinadores
  * @returns {array} - Lista de todos os times com informações do treinador
  */
-function getAllTeams() {
+export function getAllTeams() {
   const allTeams = [];
 
   db.trainers.forEach((trainer) => {
@@ -101,10 +101,3 @@ function getAllTeams() {
 
   return allTeams;
 }
-
-module.exports = {
-  createTeam,
-  addPokemonToTeam,
-  getTrainerTeams,
-  getAllTeams,
-};
