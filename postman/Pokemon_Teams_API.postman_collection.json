@@ -1,0 +1,635 @@
+{
+  "info": {
+    "_postman_id": "pokemon-teams-api",
+    "name": "Pokémon Teams API",
+    "description": "Collection completa para testar a API de gerenciamento de times de Pokémon.\n\n**Funcionalidades:**\n- Registro e login de treinadores\n- Criação de times\n- Adição de Pokémon aos times (máximo 6 por time)\n- Listagem de times\n\n**Regras de Negócio:**\n- Login e senha obrigatórios\n- Username único por treinador\n- Máximo 6 Pokémon por time\n\n**Base URL:** http://localhost:3000",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response contains status OK\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql(\"OK\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        },
+        "description": "Verifica se a API está funcionando corretamente"
+      },
+      "response": []
+    },
+    {
+      "name": "Registrar Treinador - Ash",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Trainer created successfully\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('id');",
+              "    pm.expect(jsonData).to.have.property('username');",
+              "    pm.expect(jsonData).to.have.property('teams');",
+              "    pm.expect(jsonData.username).to.eql('ash_test');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"ash_test\",\n    \"password\": \"pikachu123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["register"]
+        },
+        "description": "Registra um novo treinador (Ash para testes)"
+      },
+      "response": []
+    },
+    {
+      "name": "Registrar Treinador - Duplicado (Erro)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Error message for duplicate user\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('error');",
+              "    pm.expect(jsonData.error).to.include('já existe');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"ash_test\",\n    \"password\": \"outrasenha\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["register"]
+        },
+        "description": "Testa a regra de não permitir usernames duplicados"
+      },
+      "response": []
+    },
+    {
+      "name": "Login Treinador - Sucesso",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Login successful\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('id');",
+              "    pm.expect(jsonData).to.have.property('username');",
+              "    pm.expect(jsonData.username).to.eql('ash_ketchum');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"ash_ketchum\",\n    \"password\": \"pikachu123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["login"]
+        },
+        "description": "Login com treinador pré-cadastrado (dados de exemplo)"
+      },
+      "response": []
+    },
+    {
+      "name": "Login Treinador - Credenciais Inválidas",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 401\", function () {",
+              "    pm.response.to.have.status(401);",
+              "});",
+              "",
+              "pm.test(\"Error message for invalid credentials\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('error');",
+              "    pm.expect(jsonData.error).to.include('inválidas');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"usuario_inexistente\",\n    \"password\": \"senha_errada\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["login"]
+        },
+        "description": "Testa login com credenciais inválidas"
+      },
+      "response": []
+    },
+    {
+      "name": "Criar Time - Sucesso",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Team created successfully\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('id');",
+              "    pm.expect(jsonData).to.have.property('name');",
+              "    pm.expect(jsonData).to.have.property('pokemons');",
+              "    pm.expect(jsonData.name).to.eql('Team Test');",
+              "    pm.expect(jsonData.pokemons).to.be.an('array');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"ash_ketchum\",\n    \"teamName\": \"Team Test\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/teams",
+          "host": ["{{baseUrl}}"],
+          "path": ["teams"]
+        },
+        "description": "Cria um novo time para o treinador"
+      },
+      "response": []
+    },
+    {
+      "name": "Adicionar Pokémon ao Time - 1º Pokémon",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Pokemon added successfully\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('pokemons');",
+              "    pm.expect(jsonData.pokemons).to.include('Pikachu');",
+              "    pm.expect(jsonData.pokemons.length).to.eql(1);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"ash_ketchum\",\n    \"teamName\": \"Team Test\",\n    \"pokemonName\": \"Pikachu\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/teams/pokemon",
+          "host": ["{{baseUrl}}"],
+          "path": ["teams", "pokemon"]
+        },
+        "description": "Adiciona o primeiro Pokémon ao time"
+      },
+      "response": []
+    },
+    {
+      "name": "Adicionar Múltiplos Pokémon",
+      "item": [
+        {
+          "name": "Adicionar 2º Pokémon",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"ash_ketchum\",\n    \"teamName\": \"Team Test\",\n    \"pokemonName\": \"Charizard\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/teams/pokemon",
+              "host": ["{{baseUrl}}"],
+              "path": ["teams", "pokemon"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Adicionar 3º Pokémon",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"ash_ketchum\",\n    \"teamName\": \"Team Test\",\n    \"pokemonName\": \"Blastoise\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/teams/pokemon",
+              "host": ["{{baseUrl}}"],
+              "path": ["teams", "pokemon"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Adicionar 4º Pokémon",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"ash_ketchum\",\n    \"teamName\": \"Team Test\",\n    \"pokemonName\": \"Venusaur\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/teams/pokemon",
+              "host": ["{{baseUrl}}"],
+              "path": ["teams", "pokemon"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Adicionar 5º Pokémon",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"ash_ketchum\",\n    \"teamName\": \"Team Test\",\n    \"pokemonName\": \"Alakazam\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/teams/pokemon",
+              "host": ["{{baseUrl}}"],
+              "path": ["teams", "pokemon"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Adicionar 6º Pokémon",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"ash_ketchum\",\n    \"teamName\": \"Team Test\",\n    \"pokemonName\": \"Gengar\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/teams/pokemon",
+              "host": ["{{baseUrl}}"],
+              "path": ["teams", "pokemon"]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Pasta com requests para adicionar múltiplos Pokémon ao time"
+    },
+    {
+      "name": "Adicionar 7º Pokémon (Erro - Limite)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Error message for team limit\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('error');",
+              "    pm.expect(jsonData.error).to.include('6 Pokémon');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"ash_ketchum\",\n    \"teamName\": \"Team Test\",\n    \"pokemonName\": \"Dragonite\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/teams/pokemon",
+          "host": ["{{baseUrl}}"],
+          "path": ["teams", "pokemon"]
+        },
+        "description": "Testa a regra de máximo 6 Pokémon por time"
+      },
+      "response": []
+    },
+    {
+      "name": "Listar Times de um Treinador",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Teams list returned\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "    if (jsonData.length > 0) {",
+              "        pm.expect(jsonData[0]).to.have.property('id');",
+              "        pm.expect(jsonData[0]).to.have.property('name');",
+              "        pm.expect(jsonData[0]).to.have.property('pokemons');",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/teams/ash_ketchum",
+          "host": ["{{baseUrl}}"],
+          "path": ["teams", "ash_ketchum"]
+        },
+        "description": "Lista todos os times do treinador ash_ketchum"
+      },
+      "response": []
+    },
+    {
+      "name": "Listar Todos os Times (Geral)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"All teams list returned\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "    if (jsonData.length > 0) {",
+              "        pm.expect(jsonData[0]).to.have.property('teamId');",
+              "        pm.expect(jsonData[0]).to.have.property('teamName');",
+              "        pm.expect(jsonData[0]).to.have.property('pokemons');",
+              "        pm.expect(jsonData[0]).to.have.property('pokemonCount');",
+              "        pm.expect(jsonData[0]).to.have.property('trainer');",
+              "        pm.expect(jsonData[0].trainer).to.have.property('username');",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/teams/all",
+          "host": ["{{baseUrl}}"],
+          "path": ["teams", "all"]
+        },
+        "description": "Lista todos os times de todos os treinadores cadastrados"
+      },
+      "response": []
+    },
+    {
+      "name": "Testes com Treinadores Pré-cadastrados",
+      "item": [
+        {
+          "name": "Login - Gary Oak",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"gary_oak\",\n    \"password\": \"eevee456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Misty",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"misty_waterflower\",\n    \"password\": \"staryu789\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Times - Gary Oak",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/teams/gary_oak",
+              "host": ["{{baseUrl}}"],
+              "path": ["teams", "gary_oak"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Times - Misty",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/teams/misty_waterflower",
+              "host": ["{{baseUrl}}"],
+              "path": ["teams", "misty_waterflower"]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Testes com os treinadores que já estão cadastrados no banco de dados"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ]
+}
