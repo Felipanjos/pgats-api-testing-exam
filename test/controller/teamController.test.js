@@ -52,13 +52,16 @@ describe('Team Controller', () => {
             
             const resposta = await request(app)
                 .post('/teams')
-                .send({});
+                .send({
+                    username: 'eunaoexisto',
+                    teamName: 'Meu Novo Time'
+                });
 
             expect(resposta.status).to.equal(201);
+            expect(resposta.body.username).to.equal('ash_ketchum');
         });
 
         afterEach(() => {
-            // Reseto o Mock
             sinon.restore();
         })
     });  
