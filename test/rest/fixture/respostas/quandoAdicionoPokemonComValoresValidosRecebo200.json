@@ -1,0 +1,6 @@
+{
+  "id": 1,
+  "name": "Team Kanto",
+  "pokemons": [ "Pikachu", "Charizard", "Blastoise", "Venusaur" ],
+  "size": "4"
+}
