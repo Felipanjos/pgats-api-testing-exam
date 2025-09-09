@@ -1,4 +1,4 @@
-import db from '../model/db.js';
+const db = require('../model/db');
 
 /**
  * Registra um novo treinador
@@ -7,7 +7,7 @@ import db from '../model/db.js';
  * @returns {object} - Dados do treinador criado (sem senha)
  * @throws {Error} - Se o usuário já existir
  */
-export function registerTrainer(username, password) {
+function registerTrainer(username, password) {
   // Verifica se já existe um treinador com esse username
   const existingTrainer = db.trainers.find((trainer) => trainer.username === username);
   if (existingTrainer) {
@@ -36,7 +36,7 @@ export function registerTrainer(username, password) {
  * @returns {object} - Dados do treinador (sem senha)
  * @throws {Error} - Se credenciais inválidas
  */
-export function loginTrainer(username, password) {
+function loginTrainer(username, password) {
   const trainer = db.trainers.find((t) => t.username === username && t.password === password);
 
   if (!trainer) {
@@ -53,6 +53,12 @@ export function loginTrainer(username, password) {
  * @param {string} username - Nome de usuário
  * @returns {object|null} - Dados do treinador ou null
  */
-export function findTrainerByUsername(username) {
+function findTrainerByUsername(username) {
   return db.trainers.find((trainer) => trainer.username === username);
 }
+
+module.exports = {
+  registerTrainer,
+  loginTrainer,
+  findTrainerByUsername,
+};

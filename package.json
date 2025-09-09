@@ -2,7 +2,6 @@
   "name": "pgats-api-testing-exam",
   "version": "1.0.0",
   "description": "API Rest para gerenciar times de Pokémon",
-  "type": "module",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -16,7 +15,11 @@
   },
   "devDependencies": {
     "chai": "^4.5.0",
-    "nodemon": "^3.0.1"
+    "mocha": "^11.7.2",
+    "mochawesome": "^7.1.3",
+    "nodemon": "^3.0.1",
+    "sinon": "^21.0.0",
+    "supertest": "^7.1.4"
   },
   "keywords": [
     "pokemon",

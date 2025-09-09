@@ -1,5 +1,5 @@
-import express from 'express';
-import { registerTrainer, loginTrainer } from '../service/trainerService.js';
+const express = require('express');
+const { registerTrainer, loginTrainer } = require('../service/trainerService');
 
 const router = express.Router();
 
@@ -137,4 +137,4 @@ router.post('/login', (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;
