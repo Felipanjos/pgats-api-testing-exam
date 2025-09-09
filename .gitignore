@@ -186,3 +186,5 @@ coverage/
 # Temporary files
 tmp/
 temp/
+
+/mochawesome-report
