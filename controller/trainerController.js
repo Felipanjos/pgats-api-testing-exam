@@ -1,5 +1,6 @@
 const express = require('express');
 const { registerTrainer, loginTrainer } = require('../service/trainerService');
+const { generateToken } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -89,7 +90,7 @@ router.post('/register', (req, res) => {
  * /login:
  *   post:
  *     summary: Realiza login do treinador
- *     description: Autentica um treinador com username e password
+ *     description: Autentica um treinador com username e password e retorna um token JWT
  *     tags: [Treinadores]
  *     requestBody:
  *       required: true
@@ -108,7 +109,22 @@ router.post('/register', (req, res) => {
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Trainer'
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                 username:
+ *                   type: string
+ *                 teams:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Team'
+ *                 token:
+ *                   type: string
+ *                   description: Token JWT para autenticação
+ *                 tokenType:
+ *                   type: string
+ *                   example: "Bearer"
  *       401:
  *         description: Credenciais inválidas
  *         content:
@@ -131,7 +147,13 @@ router.post('/login', (req, res) => {
     }
 
     const trainer = loginTrainer(username, password);
-    res.status(200).json(trainer);
+    const token = generateToken(trainer);
+
+    res.status(200).json({
+      ...trainer,
+      token: token,
+      tokenType: 'Bearer',
+    });
   } catch (error) {
     res.status(401).json({ error: error.message });
   }

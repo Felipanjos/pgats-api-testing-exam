@@ -21,16 +21,19 @@ const swaggerOptions = {
         API Rest para gerenciar times de Pokémon.
         
         **Funcionalidades:**
-        - Registro e login de treinadores
-        - Criação de times para treinadores
-        - Adição de Pokémon aos times (máximo 6 por time)
+        - Registro e login de treinadores (com JWT)
+        - Criação de times para treinadores (autenticado)
+        - Adição de Pokémon aos times (autenticado, máximo de 6 por time)
         
         **Regras de negócio:**
         - Login e senha são obrigatórios para acesso
         - Não é possível registrar treinadores com o mesmo nome de usuário
         - Um time não pode ter mais de 6 Pokémon
+        - Rotas de teams requerem autenticação JWT
         
         **Banco de dados:** Em memória (dados são perdidos ao reiniciar o servidor)
+        
+        **Autenticação:** Faça login para obter o token JWT, depois use o botão "Authorize" para autenticar.
       `,
       contact: {
         name: 'Felipe Anjos',
@@ -40,6 +43,21 @@ const swaggerOptions = {
       {
         url: 'http://localhost:3000',
         description: 'Servidor de desenvolvimento',
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'Token JWT obtido através do login',
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
       },
     ],
   },

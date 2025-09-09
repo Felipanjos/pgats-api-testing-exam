@@ -1,5 +1,6 @@
 const express = require('express');
 const teamService = require('../service/teamService');
+const { authenticateToken } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -53,8 +54,10 @@ const router = express.Router();
  * /teams:
  *   post:
  *     summary: Cria um novo time para um treinador
- *     description: Cria um novo time para o treinador especificado
+ *     description: Cria um novo time para o treinador especificado (requer autenticação JWT)
  *     tags: [Times]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -80,7 +83,7 @@ const router = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/teams', (req, res) => {
+router.post('/teams', authenticateToken, (req, res) => {
   try {
     const { username, teamName } = req.body;
 
@@ -100,8 +103,10 @@ router.post('/teams', (req, res) => {
  * /teams/all:
  *   get:
  *     summary: Lista todos os times de todos os treinadores
- *     description: Retorna uma lista completa de todos os times existentes no sistema, incluindo informações do treinador proprietário
+ *     description: Retorna uma lista completa de todos os times existentes no sistema (requer autenticação JWT)
  *     tags: [Times]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de todos os times retornada com sucesso
@@ -152,7 +157,7 @@ router.post('/teams', (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/teams/all', (req, res) => {
+router.get('/teams/all', authenticateToken, (req, res) => {
   try {
     const allTeams = teamService.getAllTeams();
     res.status(200).json(allTeams);
@@ -166,8 +171,10 @@ router.get('/teams/all', (req, res) => {
  * /teams/{username}:
  *   get:
  *     summary: Lista todos os times de um treinador
- *     description: Retorna todos os times criados por um treinador específico
+ *     description: Retorna todos os times criados por um treinador específico (requer autenticação JWT)
  *     tags: [Times]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: username
@@ -191,7 +198,7 @@ router.get('/teams/all', (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/teams/:username', (req, res) => {
+router.get('/teams/:username', authenticateToken, (req, res) => {
   try {
     const { username } = req.params;
     const teams = teamService.getTrainerTeams(username);
@@ -206,8 +213,10 @@ router.get('/teams/:username', (req, res) => {
  * /teams/pokemon:
  *   post:
  *     summary: Adiciona um Pokémon a um time
- *     description: Adiciona um Pokémon ao time especificado. Um time não pode ter mais de 6 Pokémon.
+ *     description: Adiciona um Pokémon ao time especificado (requer autenticação JWT). Um time não pode ter mais de 6 Pokémon.
  *     tags: [Times]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -234,7 +243,7 @@ router.get('/teams/:username', (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/teams/pokemon', (req, res) => {
+router.post('/teams/pokemon', authenticateToken, (req, res) => {
   try {
     const { username, teamName, pokemonName } = req.body;
 
