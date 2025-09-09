@@ -1,4 +1,5 @@
 const db = require('../model/db');
+const bcrypt = require('bcryptjs');
 
 /**
  * Registra um novo treinador
@@ -37,9 +38,9 @@ function registerTrainer(username, password) {
  * @throws {Error} - Se credenciais inválidas
  */
 function loginTrainer(username, password) {
-  const trainer = db.trainers.find((t) => t.username === username && t.password === password);
+  const trainer = db.trainers.find((t) => t.username === username);
 
-  if (!trainer) {
+  if (!trainer || !bcrypt.compareSync(password, trainer.password)) {
     throw new Error('Credenciais inválidas');
   }
 

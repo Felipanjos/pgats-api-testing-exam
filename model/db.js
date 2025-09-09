@@ -1,3 +1,5 @@
+const bcrypt = require('bcryptjs');
+
 // Banco de dados em memória para armazenar treinadores e seus times
 const db = {
   trainers: [
@@ -5,7 +7,7 @@ const db = {
     {
       id: 1,
       username: 'ash_ketchum',
-      password: 'pikachu123',
+      password: bcrypt.hashSync('pikachu123', 8),
       teams: [
         {
           id: 1,
@@ -17,7 +19,7 @@ const db = {
     {
       id: 2,
       username: 'gary_oak',
-      password: 'eevee456',
+      password: bcrypt.hashSync('eevee456', 8),
       teams: [
         {
           id: 2,
@@ -29,7 +31,7 @@ const db = {
     {
       id: 3,
       username: 'misty_waterflower',
-      password: 'staryu789',
+      password: bcrypt.hashSync('staryu789', 8),
       teams: [
         {
           id: 3,
