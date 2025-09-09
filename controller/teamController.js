@@ -1,5 +1,5 @@
 const express = require('express');
-const { createTeam, addPokemonToTeam, getTrainerTeams, getAllTeams } = require('../service/teamService');
+const teamService = require('../service/teamService');
 
 const router = express.Router();
 
@@ -88,7 +88,7 @@ router.post('/teams', (req, res) => {
       return res.status(400).json({ error: 'Username e teamName são obrigatórios' });
     }
 
-    const team = createTeam(username, teamName);
+    const team = teamService.createTeam(username, teamName);
     res.status(201).json(team);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -154,7 +154,7 @@ router.post('/teams', (req, res) => {
  */
 router.get('/teams/all', (req, res) => {
   try {
-    const allTeams = getAllTeams();
+    const allTeams = teamService.getAllTeams();
     res.status(200).json(allTeams);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -194,7 +194,7 @@ router.get('/teams/all', (req, res) => {
 router.get('/teams/:username', (req, res) => {
   try {
     const { username } = req.params;
-    const teams = getTrainerTeams(username);
+    const teams = teamService.getTrainerTeams(username);
     res.status(200).json(teams);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -242,7 +242,7 @@ router.post('/teams/pokemon', (req, res) => {
       return res.status(400).json({ error: 'Username, teamName e pokemonName são obrigatórios' });
     }
 
-    const team = addPokemonToTeam(username, teamName, pokemonName);
+    const team = teamService.addPokemonToTeam(username, teamName, pokemonName);
     res.status(200).json(team);
   } catch (error) {
     res.status(400).json({ error: error.message });
