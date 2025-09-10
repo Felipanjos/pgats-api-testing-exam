@@ -10,7 +10,8 @@
     "dev-graphql": "nodemon graphql/server.js",
     "test": "mocha 'test/**/*.test.js' --timeout 10000",
     "test-rest-controller": "mocha 'test/rest/controller/**/*.test.js' --timeout 10000 --reporter mochawesome",
-    "test-rest-external": "mocha 'test/rest/external/**/*.test.js' --timeout 10000 --reporter mochawesome"
+    "test-rest-external": "mocha 'test/rest/external/**/*.test.js' --timeout 10000 --reporter mochawesome",
+    "test-graphql-external": "mocha 'test/graphql/external/**/*.test.js' --timeout 10000 --reporter mochawesome"
   },
   "dependencies": {
     "apollo-server-express": "^3.12.1",

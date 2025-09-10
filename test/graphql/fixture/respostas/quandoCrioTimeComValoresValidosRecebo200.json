@@ -1,0 +1,8 @@
+{
+    "createTeam": { 
+        "id": "4",
+        "name": "GraphQL Team", 
+        "pokemons": [], 
+        "size": "0" 
+    }
+}

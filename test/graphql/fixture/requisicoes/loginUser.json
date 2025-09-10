@@ -1,0 +1,7 @@
+{
+    "query": "mutation Login($username: String!, $password: String!) { login(input: { username: $username, password: $password } ) { id username token tokenType teams { id name pokemons size } } }",
+    "variables": {
+        "username": "ash_ketchum",
+        "password": "pikachu123"
+    }
+}
