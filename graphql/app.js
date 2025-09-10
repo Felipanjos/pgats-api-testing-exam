@@ -27,7 +27,8 @@ async function createApolloApp() {
         try {
           // Remove 'Bearer ' prefix if present
           const cleanToken = token.replace('Bearer ', '');
-          const decoded = jwt.verify(cleanToken, process.env.JWT_SECRET || 'your-secret-key');
+
+          const decoded = jwt.verify(cleanToken, process.env.JWT_SECRET || 'pokemon_secret_key_2024');
 
           // Get full user data
           user = trainerService.getTrainerByUsername(decoded.username);
