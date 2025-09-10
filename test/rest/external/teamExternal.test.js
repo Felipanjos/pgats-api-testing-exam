@@ -17,8 +17,8 @@ describe('Teams', () => {
     });
 
     it('Quando informo valores válidos ao adicionar um Pokémon ao time, recebo 200', async () => {
-      const postTeamsPokemon = require('../../fixture/requisicoes/postTeamsPokemon.json');
-      const respostaEsperada = require('../../fixture/respostas/quandoAdicionoPokemonComValoresValidosRecebo200.json');
+      const postTeamsPokemon = require('../fixture/requisicoes/postTeamsPokemon.json');
+      const respostaEsperada = require('../fixture/respostas/quandoAdicionoPokemonComValoresValidosRecebo200.json');
 
       const resposta = await request(process.env.BASE_URL_REST)
         .post('/teams/pokemon')
@@ -31,7 +31,7 @@ describe('Teams', () => {
     });
 
     it('Quando adiciono um Pokémon sem informar o nome, recebo 400', async () => {
-      const postTeamsPokemon = require('../../fixture/requisicoes/postTeamsPokemon.json');
+      const postTeamsPokemon = require('../fixture/requisicoes/postTeamsPokemon.json');
       delete postTeamsPokemon.pokemonName;
 
       const resposta = await request(process.env.BASE_URL_REST)

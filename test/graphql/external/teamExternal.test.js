@@ -30,7 +30,7 @@ describe('Testes de Teams', () => {
         expect(resposta.body.data).to.deep.equal(createTeamRespostaEsperada);
     });
 
-    it.only('Quando adiciono um Pokémon à um time vazio (alguma coisa)', async () =>{
+    it('Quando adiciono um Pokémon à um time vazio (alguma coisa)', async () =>{
         const postAdicionarPokemonAoTime = require('../fixture/requisicoes/postAdicionarPokemonAoTime.json');
         const postAdicionarPokemonAoTimeRespostaEsperada = require('../fixture/respostas/quandoAdicionoPokemonAoTimeRecebo200.json');
 
