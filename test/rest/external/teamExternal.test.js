@@ -17,22 +17,21 @@ describe('Teams', () => {
     });
 
     it('Quando informo valores válidos ao adicionar um Pokémon ao time, recebo 200', async () => {
-      const postTeamsPokemon = require('../fixture/requisicoes/postTeamsPokemon.json');
-      const respostaEsperada = require('../fixture/respostas/quandoAdicionoPokemonComValoresValidosRecebo200.json');
+      const postTeamsPokemon = require('../../fixture/requisicoes/postTeamsPokemon.json');
+      const respostaEsperada = require('../../fixture/respostas/quandoAdicionoPokemonComValoresValidosRecebo200.json');
 
       const resposta = await request(process.env.BASE_URL_REST)
         .post('/teams/pokemon')
         .set('Authorization', token)
         .send(postTeamsPokemon);
 
-      console.log(resposta.body)
       expect(resposta.status).to.equal(200);
       expect(resposta.body.pokemons).to.contain('Venusaur');
       expect(resposta.body).excluding('size').to.deep.equal(respostaEsperada);
     });
 
     it('Quando adiciono um Pokémon sem informar o nome, recebo 400', async () => {
-      const postTeamsPokemon = require('../fixture/requisicoes/postTeamsPokemon.json');
+      const postTeamsPokemon = require('../../fixture/requisicoes/postTeamsPokemon.json');
       delete postTeamsPokemon.pokemonName;
 
       const resposta = await request(process.env.BASE_URL_REST)
@@ -40,7 +39,6 @@ describe('Teams', () => {
         .set('Authorization', token)
         .send(postTeamsPokemon);
 
-      console.log(resposta.body)
       expect(resposta.status).to.equal(400);
       expect(resposta.body).to.have.property('error', 'Username, teamName e pokemonName são obrigatórios');
     });
