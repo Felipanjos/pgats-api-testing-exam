@@ -1,15 +1,17 @@
 # Pokémon Teams API
 
-API Rest para gerenciar times de Pokémon, desenvolvida com Node.js e Express. Esta API foi criada **especificamente para fins de aprendizado e prática de testes de automação em nível de API**.
+**API Rest e GraphQL** para gerenciar times de Pokémon, desenvolvida com Node.js e Express. Esta API foi criada **especificamente para fins de aprendizado e prática de testes de automação em nível de API**.
 
 ## 🎯 Funcionalidades
 
+- **API Rest e GraphQL**: Duas interfaces para a mesma funcionalidade
 - **Registro de Treinadores**: Criação de contas de treinador
-- **Login de Treinadores**: Autenticação com username e password
+- **Login de Treinadores**: Autenticação com username e password (JWT)
 - **Criação de Times**: Treinadores podem criar times de Pokémon
 - **Adição de Pokémon**: Adicionar Pokémon aos times (máximo 6 por time)
 - **Listagem de Times**: Visualizar times por treinador ou todos os times
-- **Documentação Swagger**: Interface interativa para testar a API
+- **Documentação Swagger**: Interface interativa para testar a API REST
+- **GraphQL Playground**: Interface interativa para testar a API GraphQL
 - **Collection Postman**: Testes automatizados completos inclusos
 - **Dados de Exemplo**: 3 treinadores pré-cadastrados para testes rápidos
 
@@ -23,7 +25,7 @@ API Rest para gerenciar times de Pokémon, desenvolvida com Node.js e Express. E
 
 ```
 pgats-api-testing-exam/
-├── controller/          # Controladores das rotas
+├── controller/          # Controladores das rotas REST
 │   ├── trainerController.js
 │   └── teamController.js
 ├── service/             # Lógica de negócio
@@ -31,8 +33,17 @@ pgats-api-testing-exam/
 │   └── teamService.js
 ├── model/               # Modelo de dados
 │   └── db.js           # Banco de dados em memória
-├── app.js              # Configuração do Express (sem listen)
-├── server.js           # Inicialização do servidor
+├── middleware/          # Middlewares (autenticação JWT)
+│   └── auth.js
+├── graphql/             # API GraphQL
+│   ├── schema/
+│   │   └── typeDefs.js # Schema GraphQL
+│   ├── resolvers/
+│   │   └── index.js    # Resolvers GraphQL
+│   ├── app.js          # App GraphQL (sem listen)
+│   └── server.js       # Servidor GraphQL
+├── app.js              # App REST (sem listen)
+├── server.js           # Servidor REST
 ├── package.json
 └── README.md
 ```
@@ -59,19 +70,28 @@ pgats-api-testing-exam/
    npm install
    ```
 
-3. **Inicie o servidor**:
+3. **Inicie o servidor REST**:
 
    ```bash
-   npm start
+   npm run start-rest
    ```
 
-   Ou para desenvolvimento com auto-reload:
+   **Ou inicie o servidor GraphQL**:
 
    ```bash
-   npm run dev
+   npm run start-graphql
    ```
 
-## 📡 Endpoints da API
+   Para desenvolvimento com auto-reload:
+
+   ```bash
+   npm run dev          # Para API REST
+   npm run dev-graphql  # Para API GraphQL
+   ```
+
+## 📡 API REST - Endpoints
+
+A API REST estará disponível em `http://localhost:3000`
 
 ### Treinadores
 
@@ -96,7 +116,133 @@ pgats-api-testing-exam/
 | GET    | /api-docs | Interface Swagger da API  |
 | GET    | /health   | Health check da aplicação |
 
-## 🔧 Exemplos de Uso
+## � API GraphQL
+
+A API GraphQL estará disponível em `http://localhost:4000/graphql`
+
+### GraphQL Playground
+
+Acesse `http://localhost:4000/graphql` para usar o GraphQL Playground - uma interface interativa para testar queries e mutations.
+
+### Schema GraphQL
+
+#### Types
+
+```graphql
+type Trainer {
+  id: ID!
+  username: String!
+  teams: [Team!]!
+}
+
+type Team {
+  id: ID!
+  name: String!
+  pokemons: [String!]!
+  size: String!
+}
+
+type AuthPayload {
+  id: ID!
+  username: String!
+  teams: [Team!]!
+  token: String!
+  tokenType: String!
+}
+```
+
+#### Queries (algumas requerem autenticação)
+
+```graphql
+type Query {
+  # Trainer queries
+  allTrainers: [Trainer!]!
+  trainer(username: String!): Trainer
+
+  # Team queries (require authentication)
+  allTeams: [Team!]!
+  trainerTeams(username: String!): [Team!]!
+}
+```
+
+#### Mutations
+
+```graphql
+type Mutation {
+  # Authentication mutations
+  register(input: RegisterInput!): Trainer!
+  login(input: LoginInput!): AuthPayload!
+
+  # Team mutations (require authentication)
+  createTeam(input: CreateTeamInput!): Team!
+  addPokemonToTeam(input: AddPokemonInput!): Team!
+}
+```
+
+### Exemplos GraphQL
+
+#### 1. Login e obtenção do token
+
+```graphql
+mutation Login {
+  login(input: { username: "ash_ketchum", password: "pikachu123" }) {
+    id
+    username
+    token
+    tokenType
+    teams {
+      id
+      name
+      pokemons
+      size
+    }
+  }
+}
+```
+
+#### 2. Criar um time (requer autenticação)
+
+```graphql
+# Headers: { "Authorization": "Bearer SEU_TOKEN_AQUI" }
+mutation CreateTeam {
+  createTeam(input: { username: "ash_ketchum", teamName: "Team Elite Four" }) {
+    id
+    name
+    pokemons
+    size
+  }
+}
+```
+
+#### 3. Adicionar Pokémon ao time (requer autenticação)
+
+```graphql
+# Headers: { "Authorization": "Bearer SEU_TOKEN_AQUI" }
+mutation AddPokemon {
+  addPokemonToTeam(input: { username: "ash_ketchum", teamName: "Team Kanto", pokemonName: "Snorlax" }) {
+    id
+    name
+    pokemons
+    size
+  }
+}
+```
+
+#### 4. Listar todos os times (requer autenticação)
+
+```graphql
+# Headers: { "Authorization": "Bearer SEU_TOKEN_AQUI" }
+query AllTeams {
+  allTeams {
+    id
+    name
+    pokemons
+    size
+  }
+}
+```
+
+## �🔧 Exemplos de Uso - API REST
 
 ### 1. Registrar um Treinador
 
