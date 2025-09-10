@@ -1,0 +1,10 @@
+{
+    "addPokemonToTeam": {
+        "id": "4",
+        "name": "GraphQL Team",
+        "pokemons": [
+            "Venusaur"
+        ],
+        "size": "1"
+    }
+}

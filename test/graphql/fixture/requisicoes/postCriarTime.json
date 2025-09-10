@@ -1,0 +1,7 @@
+{
+    "query": "mutation CreateTeam( $username: String!, $teamName: String!) { createTeam( input: { username: $username, teamName: $teamName }) { id name pokemons size } }",
+    "variables": {
+        "username": "ash_ketchum",
+        "teamName": "GraphQL Team"
+    }
+}

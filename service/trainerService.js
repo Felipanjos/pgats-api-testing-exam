@@ -58,8 +58,38 @@ function findTrainerByUsername(username) {
   return db.trainers.find((trainer) => trainer.username === username);
 }
 
+/**
+ * Retorna todos os treinadores (sem senhas)
+ * @returns {array} - Lista de todos os treinadores
+ */
+function getAllTrainers() {
+  return db.trainers.map(trainer => {
+    const { password, ...trainerWithoutPassword } = trainer;
+    return trainerWithoutPassword;
+  });
+}
+
+/**
+ * Busca treinador por username (sem senha)
+ * @param {string} username - Nome de usuário
+ * @returns {object} - Dados do treinador (sem senha)
+ * @throws {Error} - Se treinador não encontrado
+ */
+function getTrainerByUsername(username) {
+  const trainer = db.trainers.find((t) => t.username === username);
+  
+  if (!trainer) {
+    throw new Error('Treinador não encontrado');
+  }
+  
+  const { password, ...trainerWithoutPassword } = trainer;
+  return trainerWithoutPassword;
+}
+
 module.exports = {
   registerTrainer,
   loginTrainer,
   findTrainerByUsername,
+  getAllTrainers,
+  getTrainerByUsername,
 };

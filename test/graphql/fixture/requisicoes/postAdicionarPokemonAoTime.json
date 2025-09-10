@@ -1,0 +1,8 @@
+{
+    "query": "mutation AddPokemon($username: String!, $teamName: String!, $pokemonName: String!) { addPokemonToTeam(input: { username: $username, teamName: $teamName, pokemonName: $pokemonName }) { id name pokemons size }}",
+    "variables": {
+        "username": "ash_ketchum",
+        "teamName": "GraphQL Team",
+        "pokemonName": "Venusaur"
+    }
+}
