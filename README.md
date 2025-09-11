@@ -310,7 +310,8 @@ A API já contém 3 treinadores com seus times para facilitar os testes:
 | Ash Ketchum | `ash_ketchum`       | `pikachu123` | Team Kanto    | Pikachu, Charizard, Blastoise (3)               |
 | Gary Oak    | `gary_oak`          | `eevee456`   | Team Elite    | Umbreon, Arcanine, Exeggutor, Machamp (4)       |
 | Misty       | `misty_waterflower` | `staryu789`  | Team Cerulean | Starmie, Psyduck, Goldeen, Horsea, Gyarados (5) |
-
+| Brock       | `brock_rockhead`    | `geodude123` | Time Cheio    | Onix, Geodude, Kabutops, Golem, Rhydon, Steelix |
+ 
 ## 📚 Documentação Swagger
 
 Após iniciar o servidor, acesse a documentação interativa em:
@@ -388,48 +389,6 @@ A API utiliza **banco de dados em memória** através de variáveis JavaScript. 
 - ⚠️ **Limitações**: Dados são perdidos ao reiniciar o servidor
 - 🎯 **Propósito**: Focado em aprendizado de testes de API
 
-## 🎛️ Configuração
-
-### Variáveis de Ambiente
-
-| Variável | Descrição         | Padrão |
-| -------- | ----------------- | ------ |
-| PORT     | Porta do servidor | 3000   |
-
-### Scripts Disponíveis
-
-```bash
-npm start      # Inicia o servidor
-npm run dev    # Inicia com nodemon (auto-reload para desenvolvimento)
-npm test       # Execute os testes (a configurar)
-```
-
-## 🎯 Cenários de Teste Sugeridos
-
-### ✅ **Casos de Sucesso:**
-
-- Registro de novo treinador
-- Login com credenciais válidas
-- Criação de time
-- Adição de Pokémon (1 a 6)
-- Listagem de times por treinador
-- Listagem geral de todos os times
-
-### ❌ **Casos de Erro:**
-
-- Registro com username duplicado
-- Login com credenciais inválidas
-- Tentativa de adicionar 7º Pokémon
-- Busca por treinador inexistente
-- Campos obrigatórios em branco
-
-### 🔍 **Validações:**
-
-- Campos obrigatórios
-- Limites de negócio (6 Pokémon máximo)
-- Estrutura de dados de resposta
-- Status codes apropriados (200, 201, 400, 401, 500)
-
 ## 🛠️ Arquitetura
 
 A API segue o padrão **MVC** (Model-View-Controller) adaptado:
@@ -443,21 +402,7 @@ A API segue o padrão **MVC** (Model-View-Controller) adaptado:
 ## ⚠️ Limitações Conhecidas
 
 - **Banco de dados volátil**: Dados são perdidos ao reiniciar
-- **Sem autenticação JWT**: Login básico apenas
 - **Sem persistência**: Ideal para testes, não para produção
 - **Sem validação de esquema**: Validação manual nos controllers
 
-## 🤝 Contribuindo
-
-Este projeto é voltado para aprendizado de testes de API. Contribuições são bem-vindas:
-
-1. **Fork** o projeto
-2. **Crie testes automatizados** (Supertest, Chai, Mocha etc.)
-3. **Adicione novas funcionalidades** (autenticação JWT, validação de esquema)
-4. **Melhore a documentação**
-5. **Reporte bugs** ou sugira melhorias
-
 ---
-
-**🎯 Desenvolvido especificamente para aprendizado de testes e automação de APIs**  
-**🚀 Ideal para praticar com Postman, Supertest e outras ferramentas de teste**
