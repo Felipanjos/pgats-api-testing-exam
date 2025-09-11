@@ -7,7 +7,7 @@ use(chaiExclude);
 require('dotenv').config();
 
 // Import centralized API messages
-const { HTTP_STATUS } = require('../../../constants/apiMessages');
+const { TEAM_MESSAGES, HTTP_STATUS } = require('../../../constants/apiMessages');
 
 const postCriarTime = require('../fixture/requisicoes/postCriarTime.json');
 
@@ -44,5 +44,21 @@ describe('Teste de Teams GraphQL', () => {
 
     expect(resposta.status).to.equal(HTTP_STATUS.OK);
     expect(resposta.body.data).to.deep.equal(postAdicionarPokemonAoTimeRespostaEsperada);
+  });
+
+  it('Quando adiciono um Pokémon a um time cheio, recebo erro GraphQL', async () => {
+    const postAdicionarPokemonAoTimeCheio = require('../fixture/requisicoes/postAdicionarPokemonAoTimeCheio.json');
+
+    // Primeiro cria um time
+    await request(process.env.BASE_URL_GRAPHQL).post('').set('Authorization', token).send(postCriarTime);
+
+    const resposta = await request(process.env.BASE_URL_GRAPHQL)
+      .post('')
+      .set('Authorization', token)
+      .send(postAdicionarPokemonAoTimeCheio);
+
+    expect(resposta.status).to.equal(HTTP_STATUS.OK);
+    expect(resposta.body.errors).to.exist;
+    expect(resposta.body.errors[0].message).to.equal(TEAM_MESSAGES.TEAM_FULL);
   });
 });
