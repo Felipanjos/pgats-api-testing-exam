@@ -26,7 +26,6 @@ describe('Teams', () => {
         .send(postTeamsPokemon);
 
       expect(resposta.status).to.equal(200);
-      expect(resposta.body.pokemons).to.contain('Venusaur');
       expect(resposta.body).excluding('size').to.deep.equal(respostaEsperada);
     });
 
