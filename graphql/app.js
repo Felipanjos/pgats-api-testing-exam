@@ -34,7 +34,7 @@ async function createApolloApp() {
           user = trainerService.getTrainerByUsername(decoded.username);
         } catch (error) {
           // Invalid token - user remains null
-          console.log('Invalid token:', error.message);
+          // console.log('Invalid token:', error.message);
         }
       }
 
