@@ -1,6 +1,10 @@
 const request = require('supertest');
 const { expect } = require('chai');
 const sinon = require('sinon');
+require('dotenv').config();
+
+// Import centralized API messages
+const { TEAM_MESSAGES, HTTP_STATUS } = require('../../../constants/apiMessages');
 
 // Aplicação
 const app = require('../../../app');
@@ -11,11 +15,14 @@ const teamService = require('../../../service/teamService');
 // Auth
 let token;
 
-describe('Team Controller', () => {
+// Fixtures
+const postTeams = require('../fixture/requisicoes/postTeams.json');
+
+describe('Testes de Teams no Controller', () => {
   before(async () => {
     const resposta = await request(app).post('/login').send({
-      username: 'ash_ketchum',
-      password: 'pikachu123',
+      username: process.env.USERNAME,
+      password: process.env.PASSWORD,
     });
 
     token = `${resposta.body.tokenType} ${resposta.body.token}`;
@@ -24,53 +31,37 @@ describe('Team Controller', () => {
   describe('POST /teams', async () => {
     it('Quando não informo usuário e nome do time, recebo 400', async () => {
       const resposta = await request(app).post('/teams').set('Authorization', token).send({});
-      expect(resposta.status).to.equal(400);
-      expect(resposta.body).to.have.property('error', 'Username e teamName são obrigatórios');
+
+      expect(resposta.status).to.equal(HTTP_STATUS.BAD_REQUEST);
+      expect(resposta.body).to.have.property('error', TEAM_MESSAGES.TEAM_FIELDS_REQUIRED);
     });
 
     it('Quando informo usuário e nome do time válidos, recebo 201', async () => {
-      const resposta = await request(app).post('/teams').set('Authorization', token).send({
-        username: 'ash_ketchum',
-        teamName: 'Meu Novo Time',
-      });
-      expect(resposta.status).to.equal(201);
+      const resposta = await request(app).post('/teams').set('Authorization', token).send(postTeams);
+
+      expect(resposta.status).to.equal(HTTP_STATUS.CREATED);
     });
 
     it('Mock: Quando não informo usuário e nome do time, recebo 400', async () => {
       const teamServiceMock = sinon.stub(teamService, 'createTeam');
-      teamServiceMock.throws(new Error('Username e teamName são obrigatórios'));
+      teamServiceMock.throws(new Error(TEAM_MESSAGES.TEAM_FIELDS_REQUIRED));
 
-      const resposta = await request(app)
-        .post('/teams')
-        .set('Authorization', token)
+      const resposta = await request(app).post('/teams').set('Authorization', token).send(postTeams);
 
-        .send({
-          username: 'ash_ketchum',
-          teamName: 'Meu Novo Time',
-        });
-
-      expect(resposta.status).to.equal(400);
-      expect(resposta.body).to.have.property('error', 'Username e teamName são obrigatórios');
+      expect(resposta.status).to.equal(HTTP_STATUS.BAD_REQUEST);
+      expect(resposta.body).to.have.property('error', TEAM_MESSAGES.TEAM_FIELDS_REQUIRED);
     });
 
     it('Mock: Quando informo usuário e nome do time válidos, recebo 201', async () => {
+      const postTeamsUsuarioInexistente = require('../fixture/requisicoes/postTeamsUsuarioInexistente.json');
       const teamServiceMock = sinon.stub(teamService, 'createTeam');
-      teamServiceMock.returns({
-        username: 'ash_ketchum',
-        teamName: 'Meu Novo Time',
-      });
 
-      const resposta = await request(app)
-        .post('/teams')
-        .set('Authorization', token)
+      teamServiceMock.returns(postTeams);
 
-        .send({
-          username: 'eunaoexisto',
-          teamName: 'Meu Novo Time',
-        });
+      const resposta = await request(app).post('/teams').set('Authorization', token).send(postTeamsUsuarioInexistente);
 
-      expect(resposta.status).to.equal(201);
-      expect(resposta.body.username).to.equal('ash_ketchum');
+      expect(resposta.status).to.equal(HTTP_STATUS.CREATED);
+      expect(resposta.body.username).to.equal(process.env.USERNAME);
     });
 
     afterEach(() => {
