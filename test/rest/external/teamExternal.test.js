@@ -43,4 +43,15 @@ describe('Teste de Teams REST no External', () => {
     expect(resposta.status).to.equal(HTTP_STATUS.BAD_REQUEST);
     expect(resposta.body).to.have.property('error', TEAM_MESSAGES.POKEMON_FIELDS_REQUIRED);
   });
+
+  it('Quando adiciono um Pokémon a um time cheio, recebo 400', async () => {
+    const postTeamsPokemonCheio = require('../fixture/requisicoes/postTeamsPokemonCheio.json');
+    const resposta = await request(process.env.BASE_URL_REST)
+      .post('/teams/pokemon')
+      .set('Authorization', token)
+      .send(postTeamsPokemonCheio);
+
+    expect(resposta.status).to.equal(HTTP_STATUS.BAD_REQUEST);
+    expect(resposta.body).to.have.property('error', TEAM_MESSAGES.TEAM_FULL);
+  });
 });

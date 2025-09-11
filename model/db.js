@@ -40,9 +40,21 @@ const db = {
         },
       ],
     },
+    {
+      id: 4,
+      username: 'brock_rockhead',
+      password: bcrypt.hashSync('geodude123', 8),
+      teams: [
+        {
+          id: 4,
+          name: 'Time Cheio',
+          pokemons: ['Onix', 'Geodude', 'Kabutops', 'Golem', 'Rhydon', 'Steelix'],
+        },
+      ],
+    }
   ],
-  nextTrainerId: 4,
-  nextTeamId: 4,
+  nextTrainerId: 5,
+  nextTeamId: 5,
 };
 
 module.exports = db;
