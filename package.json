@@ -11,7 +11,8 @@
     "test": "mocha 'test/**/*.test.js' --timeout 10000",
     "test-rest-controller": "mocha 'test/rest/controller/**/*.test.js' --timeout 10000 --reporter mochawesome",
     "test-rest-external": "mocha 'test/rest/external/**/*.test.js' --timeout 10000 --reporter mochawesome",
-    "test-graphql-external": "mocha 'test/graphql/external/**/*.test.js' --timeout 10000 --reporter mochawesome"
+    "test-graphql-external": "mocha 'test/graphql/external/**/*.test.js' --timeout 10000 --reporter mochawesome",
+    "test-performance-rest": "K6_WEB_DASHBOARD=true K6_WEB_DASHBOARD_EXPORT=\"test/performance/html-report.html\" k6 run test/performance/poke-api-performance.js"
   },
   "dependencies": {
     "apollo-server-express": "^3.12.1",
