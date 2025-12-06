@@ -2,7 +2,7 @@
 
 **API Rest e GraphQL** para gerenciar times de Pokémon, desenvolvida com Node.js e Express. Esta API foi criada **especificamente para fins de aprendizado e prática de testes de automação em nível de API**.
 
-## 🎯 Funcionalidades
+## Funcionalidades
 
 - **API Rest e GraphQL**: Duas interfaces para a mesma funcionalidade
 - **Registro de Treinadores**: Criação de contas de treinador
@@ -15,13 +15,13 @@
 - **Collection Postman**: Testes automatizados completos inclusos
 - **Dados de Exemplo**: 3 treinadores pré-cadastrados para testes rápidos
 
-## 📋 Regras de Negócio
+## Regras de Negócio
 
 1. **Login e senha** devem ser informados para o acesso
 2. **Não é possível** registrar treinadores com o mesmo nome de usuário
 3. **Um time não pode ter mais de 6 Pokémon**
 
-## 🗂️ Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 pgats-api-testing-exam/
@@ -48,7 +48,7 @@ pgats-api-testing-exam/
 └── README.md
 ```
 
-## 🚀 Instalação e Configuração
+## Instalação e Configuração
 
 ### Pré-requisitos
 
@@ -89,7 +89,7 @@ pgats-api-testing-exam/
    npm run dev-graphql  # Para API GraphQL
    ```
 
-## 📡 API REST - Endpoints
+## API REST - Endpoints
 
 A API REST estará disponível em `http://localhost:3000`
 
@@ -116,7 +116,7 @@ A API REST estará disponível em `http://localhost:3000`
 | GET    | /api-docs | Interface Swagger da API  |
 | GET    | /health   | Health check da aplicação |
 
-## � API GraphQL
+## API GraphQL
 
 A API GraphQL estará disponível em `http://localhost:4000/graphql`
 
@@ -242,7 +242,7 @@ query AllTeams {
 }
 ```
 
-## �🔧 Exemplos de Uso - API REST
+## Exemplos de Uso - API REST
 
 ### 1. Registrar um Treinador
 
@@ -301,7 +301,7 @@ curl http://localhost:3000/teams/ash_ketchum
 curl http://localhost:3000/teams/all
 ```
 
-## 🎮 Dados de Exemplo Pré-cadastrados
+## Dados de Exemplo Pré-cadastrados
 
 A API já contém 3 treinadores com seus times para facilitar os testes:
 
@@ -311,8 +311,8 @@ A API já contém 3 treinadores com seus times para facilitar os testes:
 | Gary Oak    | `gary_oak`          | `eevee456`   | Team Elite    | Umbreon, Arcanine, Exeggutor, Machamp (4)       |
 | Misty       | `misty_waterflower` | `staryu789`  | Team Cerulean | Starmie, Psyduck, Goldeen, Horsea, Gyarados (5) |
 | Brock       | `brock_rockhead`    | `geodude123` | Time Cheio    | Onix, Geodude, Kabutops, Golem, Rhydon, Steelix |
- 
-## 📚 Documentação Swagger
+
+## Documentação Swagger
 
 Após iniciar o servidor, acesse a documentação interativa em:
 **http://localhost:3000/api-docs**
@@ -324,14 +324,14 @@ A interface Swagger permite:
 - Ver exemplos de request/response
 - Entender a estrutura dos dados
 
-## 🧪 Testes
+## Testes
 
 Esta API foi desenvolvida especificamente para ser testada com ferramentas como:
 
 - **Supertest**: Para testes de integração
 - **Postman**: Para testes manuais e automatizados
 
-### 📦 Collection Postman Completa
+### Collection Postman Completa
 
 O projeto inclui uma **collection completa do Postman** na pasta `postman/`:
 
@@ -339,7 +339,7 @@ O projeto inclui uma **collection completa do Postman** na pasta `postman/`:
 - **`Pokemon_Teams_API.postman_environment.json`** - Environment com variáveis
 - **`README.md`** - Documentação detalhada da collection
 
-#### 🚀 Como usar a Collection Postman:
+#### Como usar a Collection Postman:
 
 1. **Importar no Postman:**
 
@@ -354,13 +354,13 @@ O projeto inclui uma **collection completa do Postman** na pasta `postman/`:
    - **Individual**: Selecione uma request e clique "Send"
    - **Collection completa**: Clique "Run" na collection
 
-#### ✅ O que está incluído na Collection:
+#### O que está incluído na Collection:
 
 - **Validação de regras de negócio**
 - **Dados pré-cadastrados** para testes rápidos
 - **Variáveis de ambiente** configuradas
 
-### 🔬 Testes com Supertest
+### Testes com Supertest
 
 Para usar em testes com Supertest, importe o `app.js` (que não contém o método `listen()`):
 
@@ -381,15 +381,87 @@ describe('API Tests', () => {
 });
 ```
 
-## 💾 Banco de Dados
+### Testes de Performance com K6
+
+Com o servidor rodando, execute o script `npm run test-performance-rest`.
+
+Conceitos aplicados aplicados com a ferramenta:
+
+- Thresholds e Stages (`test/k6/createTeam.test.js`)
+```
+  export const options = {
+    thresholds: {
+      http_req_duration: ['p(95)<2000'], 
+    },
+    stages: [
+      { duration: '3s', target: 10 }, // Ramp up
+      { duration: '15s', target: 10 }, // Average
+      { duration: '2s', target: 100 }, // Spike
+      { duration: '3s', target: 100 }, // Spike
+      { duration: '5s', target: 10 }, // Average
+      { duration: '5s', target: 0 }, // Ramp down
+    ],
+  };
+```
+- Checks e Helpers
+  - No Helper `test/k6/helpers/login.js` que abstrai a lógica de Login, a validação do status code da resposta é feita por meio do check `expect.soft(responseTrainerLogin.status).toBe(200);`.
+- Trends
+  - Também em `/test/k6/createTeam.test.js`, na linha 28 `export const createTeamTrend = new Trend('create_team_duration');` a criação da Trend é realizada, para enfim ser calculada e adicionada por meio do código abaixo, no final do mesmo arquivo:
+  ```
+    const start = Date.now();
+    const res = http.post(url, payload, params);
+    const duration = Date.now() - start;
+    createTeamTrend.add(duration);
+  ```
+- Faker
+  - Utilizado em `test/k6/helpers/randomTeamName.js` para mais uma camada de randomização
+  ```
+    export function randomTeamName() {
+      const timestamp = Date.now();
+      const random = Math.floor(Math.random() * 100000);
+      return `Team ${faker.word.adjective()}${timestamp}${random}`;
+    }
+  ```
+- Variável de Ambiente
+  - Em `test/k6/helpers/getBaseUrl.js`. a helper function `getBaseUrl()` retorna a variável de ambiente caso configurada.
+  ```
+    export function getBaseUrl() {
+      return __ENV.BASE_URL || 'http://localhost:3000';
+    }
+  ```
+- No teste de performance da criação de times (`test/k6/createTeam.test.js`), os conceitos de Groups, Uso de Token de Autenticação, Reaproveitamento de Resposta, Data-Driven Testing são utilizados.
+```
+  group('Criando um novo time', () => {
+    teamName = randomTeamName();
+    let payload = JSON.stringify({
+      username: user.username,
+      teamName: teamName,
+    });
+    let url = `${getBaseUrl()}/teams`;
+    let params = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const start = Date.now();
+    const res = http.post(url, payload, params);
+    const duration = Date.now() - start;
+    createTeamTrend.add(duration);
+    expect.soft(res.status).toBe(201);
+  });
+```
+
+## Banco de Dados
 
 A API utiliza **banco de dados em memória** através de variáveis JavaScript. Isso significa que:
 
-- ✅ **Vantagens**: Simples, rápido, ideal para testes
-- ⚠️ **Limitações**: Dados são perdidos ao reiniciar o servidor
-- 🎯 **Propósito**: Focado em aprendizado de testes de API
+- **Vantagens**: Simples, rápido, ideal para testes
+- **Limitações**: Dados são perdidos ao reiniciar o servidor
+- **Propósito**: Focado em aprendizado de testes de API
 
-## 🛠️ Arquitetura
+## Arquitetura
 
 A API segue o padrão **MVC** (Model-View-Controller) adaptado:
 
@@ -399,7 +471,7 @@ A API segue o padrão **MVC** (Model-View-Controller) adaptado:
 - **App** (`app.js`): Configuração do Express e middleware
 - **Server** (`server.js`): Inicialização do servidor
 
-## ⚠️ Limitações Conhecidas
+## Limitações Conhecidas
 
 - **Banco de dados volátil**: Dados são perdidos ao reiniciar
 - **Sem persistência**: Ideal para testes, não para produção
