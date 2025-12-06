@@ -405,6 +405,7 @@ Conceitos aplicados aplicados com a ferramenta:
 ```
 - Também em `/test/k6/createTeam.test.js`, na linha 28 `export const createTeamTrend = new Trend('create_team_duration');` a criação da Trend é realizada, para enfim ser calculada e adicionada por meio do código abaixo, no final do mesmo arquivo:
   ```
+  // test/k6/createTeam.test.js
     const start = Date.now();
     const res = http.post(url, payload, params);
     const duration = Date.now() - start;
@@ -413,6 +414,7 @@ Conceitos aplicados aplicados com a ferramenta:
 - No Helper `test/k6/helpers/login.js` que abstrai a lógica de Login, a validação do status code da resposta é feita por meio do Check `expect.soft(responseTrainerLogin.status).toBe(200);`.
 - A extesão Faker.js é aplicada em `test/k6/helpers/randomTeamName.js` para mais uma camada de randomização:
   ```
+  // test/k6/helpers/randomTeamName.js
     export function randomTeamName() {
       const timestamp = Date.now();
       const random = Math.floor(Math.random() * 100000);
@@ -421,6 +423,7 @@ Conceitos aplicados aplicados com a ferramenta:
   ```
 - Em `test/k6/helpers/getBaseUrl.js`. a helper function `getBaseUrl()` retorna a variável de ambiente, que é passada no script de execução.
   ```
+  // test/k6/helpers/getBaseUrl.js
     export function getBaseUrl() {
       return __ENV.BASE_URL || 'http://localhost:3000';
     }
@@ -462,6 +465,7 @@ Conceitos aplicados aplicados com a ferramenta:
   2. Uso de Token de Autenticação: para requests que necessitam de autenticação
   3. Data-Driven Testing: testes alimentados por dados provenientes de um JSON externo (`test/k6/data/login.test.data.json`)
 ```
+// test/k6/createTeam.test.js
   group('Criando um novo time', () => {
     teamName = randomTeamName();
     let payload = JSON.stringify({
@@ -483,7 +487,15 @@ Conceitos aplicados aplicados com a ferramenta:
     expect.soft(res.status).toBe(201);
   });
 ```
+- Os dados estáticos em `test/k6/data/login.test.data.json` em conjunto com sintaxe abaixo possibilitam o uso de Data Driven Testing, acessando-os por meio de `user.username` no exemplo acima.
+  ```
+  // test/k6/createTeam.test.js
+  const users = new SharedArray('users', function () {
+    return JSON.parse(open('./data/login.test.data.json'));
+  });
+  ```
 ```
+// test/k6/data/login.test.data.json
 [
   {
     "username": "ash_ketchum",
@@ -499,13 +511,6 @@ Conceitos aplicados aplicados com a ferramenta:
   }
 ]
 ```
-  - Os dados estáticos em `test/k6/data/login.test.data.json` em conjunto com sintaxe abaixo possibilitam o uso de Data Driven Testing, acessando-os por meio de `user.username` no exemplo acima.
-    ```
-    const users = new SharedArray('users', function () {
-      return JSON.parse(open('./data/login.test.data.json'));
-    });
-    ```
-  
 
 ## Banco de Dados
 
