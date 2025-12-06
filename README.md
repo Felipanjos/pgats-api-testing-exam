@@ -387,7 +387,7 @@ Com o servidor rodando, execute o script `npm run test-performance-rest`.
 
 Conceitos aplicados aplicados com a ferramenta:
 
-- Thresholds e Stages (`test/k6/createTeam.test.js`)
+- Threshold de duração inferior à 2 segundos no Percentil de 95, e Stages representando diferentes testes de performance aplicados em (`test/k6/createTeam.test.js`):
 ```
   export const options = {
     thresholds: {
@@ -425,8 +425,42 @@ Conceitos aplicados aplicados com a ferramenta:
       return __ENV.BASE_URL || 'http://localhost:3000';
     }
   ```
-- O Group "Fazendo login" (em `test/k6/createTeam.test.js`), por meio da helper function `login()` (em `test/k6/helpers/login.js`) salva o token de acesso, para que o Reaproveitamento de Resposta possa ser aplicado no tópico abaixo.
-- No teste de performance da criação de times (`test/k6/createTeam.test.js`), os conceitos de "Groups", "Uso de Token de Autenticação" e "Data-Driven Testing" são utilizados.
+- O Group "Fazendo login", por meio da helper function `login()` salva o token de acesso, para que o Reaproveitamento de Resposta possa ser aplicado no tópico abaixo.
+```
+  // test/k6/createTeam.test.js
+
+  group('Fazendo login', () => {
+    token = login(user.username, user.password);
+  });  
+```
+```
+  // test/k6/helpers/login.js
+
+  export function login(username, password) {
+    let responseTrainerLogin = '';
+
+    responseTrainerLogin = http.post(
+      `${getBaseUrl()}/login`,
+      JSON.stringify({
+        username: username,
+        password: password,
+      }),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    expect.soft(responseTrainerLogin.status).toBe(200);
+
+    return responseTrainerLogin.json('token');
+  }
+```
+- No teste de performance da criação de times (`test/k6/createTeam.test.js`), os seguintes conceitos são utilizados: 
+  1. Groups: agrupamento lógico de passos no teste
+  2. Uso de Token de Autenticação: para requests que necessitam de autenticação
+  3. Data-Driven Testing: testes alimentados por dados provenientes de um JSON externo (`test/k6/data/login.test.data.json`)
 ```
   group('Criando um novo time', () => {
     teamName = randomTeamName();
@@ -448,6 +482,22 @@ Conceitos aplicados aplicados com a ferramenta:
     createTeamTrend.add(duration);
     expect.soft(res.status).toBe(201);
   });
+```
+```
+[
+  {
+    "username": "ash_ketchum",
+    "password": "pikachu123"
+  },
+  {
+    "username": "misty_waterflower",
+    "password": "staryu789"
+  },
+  {
+    "username": "brock_rockhead",
+    "password": "geodude123"
+  }
+]
 ```
   - Os dados estáticos em `test/k6/data/login.test.data.json` em conjunto com sintaxe abaixo possibilitam o uso de Data Driven Testing, acessando-os por meio de `user.username` no exemplo acima.
     ```
