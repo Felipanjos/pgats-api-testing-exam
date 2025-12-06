@@ -403,18 +403,15 @@ Conceitos aplicados aplicados com a ferramenta:
     ],
   };
 ```
-- Checks e Helpers
-  - No Helper `test/k6/helpers/login.js` que abstrai a lógica de Login, a validação do status code da resposta é feita por meio do check `expect.soft(responseTrainerLogin.status).toBe(200);`.
-- Trends
-  - Também em `/test/k6/createTeam.test.js`, na linha 28 `export const createTeamTrend = new Trend('create_team_duration');` a criação da Trend é realizada, para enfim ser calculada e adicionada por meio do código abaixo, no final do mesmo arquivo:
+- Também em `/test/k6/createTeam.test.js`, na linha 28 `export const createTeamTrend = new Trend('create_team_duration');` a criação da Trend é realizada, para enfim ser calculada e adicionada por meio do código abaixo, no final do mesmo arquivo:
   ```
     const start = Date.now();
     const res = http.post(url, payload, params);
     const duration = Date.now() - start;
     createTeamTrend.add(duration);
   ```
-- Faker
-  - Utilizado em `test/k6/helpers/randomTeamName.js` para mais uma camada de randomização
+- No Helper `test/k6/helpers/login.js` que abstrai a lógica de Login, a validação do status code da resposta é feita por meio do Check `expect.soft(responseTrainerLogin.status).toBe(200);`.
+- A extesão Faker.js é aplicada em `test/k6/helpers/randomTeamName.js` para mais uma camada de randomização:
   ```
     export function randomTeamName() {
       const timestamp = Date.now();
@@ -422,14 +419,14 @@ Conceitos aplicados aplicados com a ferramenta:
       return `Team ${faker.word.adjective()}${timestamp}${random}`;
     }
   ```
-- Variável de Ambiente
-  - Em `test/k6/helpers/getBaseUrl.js`. a helper function `getBaseUrl()` retorna a variável de ambiente caso configurada.
+- Em `test/k6/helpers/getBaseUrl.js`. a helper function `getBaseUrl()` retorna a variável de ambiente, que é passada no script de execução.
   ```
     export function getBaseUrl() {
       return __ENV.BASE_URL || 'http://localhost:3000';
     }
   ```
-- No teste de performance da criação de times (`test/k6/createTeam.test.js`), os conceitos de Groups, Uso de Token de Autenticação, Reaproveitamento de Resposta, Data-Driven Testing são utilizados.
+- O Group "Fazendo login" (em `test/k6/createTeam.test.js`), por meio da helper function `login()` (em `test/k6/helpers/login.js`) salva o token de acesso, para que o Reaproveitamento de Resposta possa ser aplicado no tópico abaixo.
+- No teste de performance da criação de times (`test/k6/createTeam.test.js`), os conceitos de "Groups", "Uso de Token de Autenticação" e "Data-Driven Testing" são utilizados.
 ```
   group('Criando um novo time', () => {
     teamName = randomTeamName();
@@ -452,6 +449,13 @@ Conceitos aplicados aplicados com a ferramenta:
     expect.soft(res.status).toBe(201);
   });
 ```
+  - Os dados estáticos em `test/k6/data/login.test.data.json` em conjunto com sintaxe abaixo possibilitam o uso de Data Driven Testing, acessando-os por meio de `user.username` no exemplo acima.
+    ```
+    const users = new SharedArray('users', function () {
+      return JSON.parse(open('./data/login.test.data.json'));
+    });
+    ```
+  
 
 ## Banco de Dados
 
